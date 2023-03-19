@@ -44,6 +44,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Domain\Dialogue.cs" />
+    <Compile Include="Domain\AttackData.cs" />
+    <Compile Include="Domain\GetSkillRule.cs" />
+    <Compile Include="Domain\Skill.cs" />
     <Compile Include="Framework\ConsoleUI.cs" />
     <Compile Include="UseCase\App.cs" />
     <Compile Include="UseCase\GameManager.cs" />
