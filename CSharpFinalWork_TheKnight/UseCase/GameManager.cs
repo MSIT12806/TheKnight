@@ -7,6 +7,15 @@ using System.Threading;
 
 namespace CSharpFinalWork_TheKnight
 {
+
+    //Use Case:
+    //實體→說故事
+    //實體→顯示英雄屬性
+    //實體→顯示英雄狀態
+    //實體→顯示敵人狀態
+    //實體→傳送選擇
+    //玩家→進行選擇
+
     /// <summary>
     /// 生成遊戲用的物件、管理遊戲流程等。
     /// </summary>
@@ -18,17 +27,21 @@ namespace CSharpFinalWork_TheKnight
         bool win = false;
         List<string> fightProcess = new List<string>();
 
-        UIHandler _ui;
-        public GameManager(UIHandler ui)
+        public GameManager(UIHandler ui, Dialogue dialogue)
         {
-            _ui= ui;
+            _ui = ui;
+            _dialogue = dialogue;
         }
-        Plot _plot = new Plot();
+        Dialogue _dialogue;
+        UIHandler _ui;
         public void Game()
         {
             while (!win)
             {
-                Start();
+                //點評：這個有點像是 UseCase？ 去呼叫 顯示劇情、設定戰鬥屬性、進行戰鬥、結束劇情等等。
+                ShowPlot();
+                //選擇難易度？
+                Giant = new Giant();
                 SetPlayer();
                 Fight();
                 if (End())
@@ -43,26 +56,23 @@ namespace CSharpFinalWork_TheKnight
         }
 
 
-        public void Start()
+        public void ShowPlot()
         {
             //點評：直接跟 Console 耦合了，文字敘述跟介面應該分開，這個也不應該叫做 Start
-            UiGenerate.RenderOut(true, UiGenerate.WindowSelect.Plot, "是否觀看劇情？");
-            if (UiGenerate.RenderOut(false, UiGenerate.WindowSelect.Menu, "是", "否") == 0)
+            _ui.ShowDialogue("", "是否觀看劇情？");
+            bool isReadPlot= _ui.ReadChoice("是", "否") == 0;
+            if (isReadPlot)
             {
-                UiGenerate.RenderOut(true, UiGenerate.WindowSelect.Plot,  _plot.FirstPlot_Intro().ToArray());
-                UiGenerate.PressAnyKeyToContinue();
-                UiGenerate.RenderOut(true, UiGenerate.WindowSelect.Plot, _plot.FirstPlot_IntroPoint().ToArray());
-                UiGenerate.PressAnyKeyToContinue();
+                _ui.ShowDialogue(sentances: _dialogue.StoryIntro().ToArray());
+                _ui.ReadChoice();
+                _ui.ShowDialogue(sentances: _dialogue.PointIntro().ToArray());
+                _ui.ReadChoice();
             }
-
-            //選擇難易度？
-            Giant = new Giant();
-
         }
         public void SetPlayer()
         {
             //產生一個Player 物件
-            var player = new Player();
+            var player = new Player(_ui);
             //讓 Client 分配點數
             player.DistributeProperty();
             //set Player 物件

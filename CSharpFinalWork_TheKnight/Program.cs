@@ -1,4 +1,5 @@
 ﻿using Console2048;
+using CSharpFinalWork_TheKnight.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,9 @@ namespace CSharpFinalWork_TheKnight
 
         static void Game()
         {
-            var gm = Singalton<GameManager>.SingletonObj;
+            UIHandler consoleUI = new ConsoleUI();
+            Dialogue dialogue = new Dialogue();
+            var gm = new GameManager(consoleUI, dialogue);
             gm.Game();
         }
 

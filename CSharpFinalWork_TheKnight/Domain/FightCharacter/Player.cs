@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSharpFinalWork_TheKnight;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,21 +13,15 @@ namespace Console2048
     public delegate (int damage, int rounds) ReleaseSkill(FightCharacter target);
     public class Player : FightCharacter
     {
-        //前置屬性
-        public int OriginPoint { get; private set; }
-        public Player()
+        UIHandler _ui;
+        public Player(UIHandler ui)
         {
             Name = "勇者";
-            OriginPoint = 100;
+            UnassignedPoint = 100;
+            _ui = ui;
         }
 
         #region 分配階段
-
-        int _power;
-        int _endurance;
-        int _agile;
-        int _sword;
-        int _sheild;
 
         public enum PlayerBasicProperty
         {
@@ -38,11 +33,12 @@ namespace Console2048
         }
 
         //體質
-        public int Power { get { return _power; } set { if (DecreacePointWhenPropertyAdd(value - _power)) _power = value; } }
-        public int Endurance { get { return _endurance; } set { if (DecreacePointWhenPropertyAdd(value - _endurance)) _endurance = value; } }
-        public int Agile { get { return _agile; } set { if (DecreacePointWhenPropertyAdd(value - _agile)) _agile = value; } }
-        public int SwordPoint { get { return _sword; } set { if (DecreacePointWhenPropertyAdd(value - _sword)) _sword = value; } }
-        public int ShieldPoint { get { return _sheild; } set { if (DecreacePointWhenPropertyAdd(value - _sheild)) _sheild = value; } }
+        public int UnassignedPoint { get; private set; }
+        public int Power { get; private set; }
+        public int Endurance { get; private set; }
+        public int Agile { get; private set; }
+        public int SwordPoint { get; private set; }
+        public int ShieldPoint { get; private set; }
 
         //戰鬥前置屬性
         public override int FightRoundUnit { get; protected set; }
@@ -61,81 +57,80 @@ namespace Console2048
         public override float Stun { get; set; }
         public override float Collide { get; set; }
 
-        internal void ShowDistribute()
+        public void DistributeProperty()
         {
-            UiGenerate.RenderOut(true, UiGenerate.WindowSelect.Plot, "分配你的點數，以找出擊敗魔像的方法。", $"剩餘點數：{OriginPoint}", "請選擇屬性");
+            while (!GotoBattle())
+            {
+                ShowDistribute();
+                ShowState();
+                int s = _ui.ReadChoice<Player.PlayerBasicProperty>();
+                Distribute((Player.PlayerBasicProperty)s);
+            }
+        }
+        private bool GotoBattle()
+        {
+            if (UnassignedPoint >= 10) return false;
+
+            _ui.ShowDialogue("是否進入戰鬥？");
+            ShowState();
+            return (UiGenerate.RenderOut(false, UiGenerate.WindowSelect.Menu, "是", "否") == 0);
+        }
+        private void ShowDistribute()
+        {
+            _ui.ShowDialogue("分配你的點數，以找出擊敗魔像的方法。", $"剩餘點數：{UnassignedPoint}", "請選擇屬性");
         }
 
-        public void Distribute(PlayerBasicProperty s)
+        private void Distribute(PlayerBasicProperty s)
         {
-            UiGenerate.RenderOut(true, UiGenerate.WindowSelect.Plot, "分配你的點數，以找出擊敗魔像的方法。", $"剩餘點數：{OriginPoint}", $"已選擇：{s}");
-            string input = UiGenerate.RenderOutMenuReadLine("請輸入要加多少點數：");
+            _ui.ShowDialogue("分配你的點數，以找出擊敗魔像的方法。", $"剩餘點數：{UnassignedPoint}", $"已選擇：{s}");
+            string input = _ui.ReadKeyIn("請輸入要加多少點數：");
             int inputPoint = -1;
             if (!int.TryParse(input, out inputPoint))
             {
-                UiGenerate.RenderOut(true, UiGenerate.WindowSelect.Plot, "錯誤：輸入的不是數值。");
-                UiGenerate.PressAnyKeyToContinue();
+                _ui.ShowDialogue("錯誤：輸入的不是數值。");
+                _ui.ReadChoice();
                 return;
             }
 
-            switch (s)
+            if (inputPoint > UnassignedPoint)
+            {
+                _ui.ShowDialogue("錯誤：你的點數不足。");
+                _ui.ReadChoice();
+                return;
+            }
+
+            TransactionPoint(s, inputPoint);
+        }
+
+
+
+
+        /// <summary>
+        /// return: 點數是否足夠
+        /// </summary>
+        private void TransactionPoint(PlayerBasicProperty type, int val)
+        {
+            switch (type)
             {
                 case PlayerBasicProperty.Power:
-                    Power += inputPoint;
+                    Power += val;
                     break;
                 case PlayerBasicProperty.Endurance:
-                    Endurance += inputPoint;
+                    Endurance += val;
                     break;
                 case PlayerBasicProperty.Agile:
-                    Agile += inputPoint;
+                    Agile += val;
                     break;
                 case PlayerBasicProperty.Sword:
-                    SwordPoint += inputPoint;
+                    SwordPoint += val;
                     break;
                 case PlayerBasicProperty.Sheild:
-                    ShieldPoint += inputPoint;
+                    ShieldPoint += val;
                     break;
                 default:
                     break;
             }
-        }
-
-
-
-        internal void DistributeProperty()
-        {
-
-            while (true)
-            {
-
-                if (OriginPoint < 10)
-                {
-                    UiGenerate.RenderOut(true, UiGenerate.WindowSelect.Plot, "是否進入戰鬥？");
-                    ShowState();
-                    if (UiGenerate.RenderOut(false, UiGenerate.WindowSelect.Menu, "是", "否") == 0)
-                        return;
-                }
-                ShowDistribute();
-                ShowState();
-                int s = UiGenerate.RenderOutEnumMenu<Player.PlayerBasicProperty>();
-                Distribute((Player.PlayerBasicProperty)s);
-
-            }
-
-        }
-        /// <summary>
-        /// return: 點數是否足夠
-        /// </summary>
-        private bool DecreacePointWhenPropertyAdd(int val)
-        {
-            if (val > OriginPoint)
-            {
-                UiGenerate.RenderOut(true, UiGenerate.WindowSelect.Plot, "錯誤：你的點數不足。");
-                UiGenerate.PressAnyKeyToContinue();
-                return false;
-            }
-            OriginPoint -= val;
-            return true;
+            UnassignedPoint -= val;
         }
         #endregion
         #region 戰鬥前置階段
@@ -190,7 +185,7 @@ namespace Console2048
                     Skills.Add(item.Key, item.Value);
                 else
                     throw new Exception("技能名稱出現重複");
-            }   
+            }
 
             //from property
             if (this.Power >= 35)
@@ -246,7 +241,7 @@ namespace Console2048
             var skillsKeyArray = Skills.Keys.ToArray();
             int skillIndex = UiGenerate.RenderOut(false, UiGenerate.WindowSelect.Menu, skillsKeyArray);
 
-            UiGenerate.RenderOut(true, UiGenerate.WindowSelect.Plot, "請選擇對象");
+            _ui.ShowDialogue("請選擇對象");
             int targetIdx = UiGenerate.RenderOut(false, UiGenerate.WindowSelect.Menu, "魔像", "自己");
             FightCharacter t = targetIdx == 0 ? opponent : this;
             NowFightContext.Add($"{this.Name} 對 {t.Name} 施展 {skillsKeyArray[skillIndex]}");
@@ -274,7 +269,7 @@ namespace Console2048
 
 
 
-        internal void ShowState()
+        public void ShowState()
         {
             List<string> builder = new List<string>();
             builder.Add($"基本數值：");
@@ -295,7 +290,7 @@ namespace Console2048
             builder.Add("");
             builder.Add($"狀態：");
             builder.AddRange(NowBuffs.Select(i => i.Item1).ToArray());
-            UiGenerate.RenderOut(false, UiGenerate.WindowSelect.State, builder.ToArray());
+            _ui.ShowState(builder.ToArray());
         }
 
     }

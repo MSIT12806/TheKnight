@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace CSharpFinalWork_TheKnight.Domain
 {
-    public class Plot
+    public class Dialogue
     {
-        public IEnumerable<string> FirstPlot_Intro()
+        public IEnumerable<string> StoryIntro()
         {
             var r = new List<string>();
             r.Add("??：");
@@ -18,7 +18,7 @@ namespace CSharpFinalWork_TheKnight.Domain
 
             return r;
         }
-        public IEnumerable<string> FirstPlot_IntroPoint()
+        public IEnumerable<string> PointIntro()
         {
             var r = new List<string>();
             r.Add("??：");
