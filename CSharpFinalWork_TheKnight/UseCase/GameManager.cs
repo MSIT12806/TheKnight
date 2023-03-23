@@ -24,8 +24,15 @@ namespace CSharpFinalWork_TheKnight
         public void GetHeroProperty() { }
         public void GetHeroState() { }
         public void GetEnemyState() { }
-        public void GetGightProcess() { }
-        public bool IsShowStory => false;
+        public void GetFightProcess() { }
+        public bool ShowStory() {
+
+            //_ui.ShowDialogue("", "是否觀看劇情？");
+            //bool isReadPlot = _ui.ReadChoice("是", "否") == 0;
+            bool isReadPlot = false;
+            return isReadPlot;
+        }
+        public bool GameEnding => false;
         public void DistributeProperty() { }
         public void ChooseMove() { }
     }
@@ -59,15 +66,15 @@ namespace CSharpFinalWork_TheKnight
                 //選擇難易度？
                 Giant = new Giant();
                 SetPlayer();
+                Round++;
                 Fight();
+                fightProcess.Clear();
                 if (End())
                 {
                     UiGenerate.RenderOut(true, UiGenerate.WindowSelect.Plot, "遊戲結束");
                     UiGenerate.PressAnyKeyToContinue();
                     return;
                 }
-                Round++;
-                fightProcess.Clear();
             }
         }
 
@@ -76,7 +83,7 @@ namespace CSharpFinalWork_TheKnight
         {
             //點評：直接跟 Console 耦合了，文字敘述跟介面應該分開，這個也不應該叫做 Start
             _ui.ShowDialogue("", "是否觀看劇情？");
-            bool isReadPlot= _ui.ReadChoice("是", "否") == 0;
+            bool isReadPlot = _ui.ReadChoice("是", "否") == 0;
             if (isReadPlot)
             {
                 _ui.ShowDialogue(sentances: _dialogue.StoryIntro().ToArray());

@@ -13,6 +13,17 @@ namespace Console2048
     public delegate (int damage, int rounds) ReleaseSkill(FightCharacter target);
     public class Player : FightCharacter
     {
+        public void DistributeProperty()
+        {
+            while (!GotoBattle())
+            {
+                ShowDistribute();
+                ShowState();
+                int s = _ui.ReadChoice<Player.PlayerBasicProperty>();
+                Distribute((Player.PlayerBasicProperty)s);
+            }
+        }
+
         UIHandler _ui;
         public Player(UIHandler ui)
         {
@@ -57,16 +68,6 @@ namespace Console2048
         public override float Stun { get; set; }
         public override float Collide { get; set; }
 
-        public void DistributeProperty()
-        {
-            while (!GotoBattle())
-            {
-                ShowDistribute();
-                ShowState();
-                int s = _ui.ReadChoice<Player.PlayerBasicProperty>();
-                Distribute((Player.PlayerBasicProperty)s);
-            }
-        }
         private bool GotoBattle()
         {
             if (UnassignedPoint >= 10) return false;

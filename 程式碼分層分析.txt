@@ -1,0 +1,15 @@
+Domain:
+玩法：
+1. 劇情
+2. 產生英雄
+3. 戰鬥
+
+MainRule?
+#劇情
+1. 讀取 input[是否跳過劇情] => interface GetResponse(選項)
+2. 傳送劇情(out 字串陣列？)
+
+#產生英雄
+1. 讀取 input[分配點數] => 
+2. 讀取 input[是否進入戰鬥]
+#戰鬥
