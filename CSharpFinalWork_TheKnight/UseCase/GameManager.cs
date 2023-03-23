@@ -14,8 +14,23 @@ namespace CSharpFinalWork_TheKnight
     //實體→顯示英雄狀態 //Hero : FightCharacter
     //實體→顯示敵人狀態 //Enemy : FightCharacter
     //實體→傳送選擇 //Hero
-    //實體→戰鬥歷程
-    //玩家→進行選擇
+    //實體→戰鬥歷程 //Correspondent 通訊員?
+    //玩家→是否觀看劇情
+    //玩家→分配英雄點數
+    //玩家→決定(戰鬥)行動
+    public class ReGM
+    {
+        public void GetStory() { }
+        public void GetHeroProperty() { }
+        public void GetHeroState() { }
+        public void GetEnemyState() { }
+        public void GetGightProcess() { }
+        public bool IsShowStory => false;
+        public void DistributeProperty() { }
+        public void ChooseMove() { }
+    }
+
+
 
     /// <summary>
     /// 生成遊戲用的物件、管理遊戲流程等。
