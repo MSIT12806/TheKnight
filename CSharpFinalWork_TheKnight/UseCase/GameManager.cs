@@ -9,11 +9,12 @@ namespace CSharpFinalWork_TheKnight
 {
 
     //Use Case:
-    //實體→說故事
-    //實體→顯示英雄屬性
-    //實體→顯示英雄狀態
-    //實體→顯示敵人狀態
-    //實體→傳送選擇
+    //實體→說故事  //Narration
+    //實體→顯示英雄屬性 //Hero
+    //實體→顯示英雄狀態 //Hero : FightCharacter
+    //實體→顯示敵人狀態 //Enemy : FightCharacter
+    //實體→傳送選擇 //Hero
+    //實體→戰鬥歷程
     //玩家→進行選擇
 
     /// <summary>
